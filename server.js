@@ -3,12 +3,21 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Redirect home root to the proxy path
+// Automatic HTML redirection for the home root
 app.get('/', (req, res) => {
-    res.redirect('/main');
+    res.send(`
+        <html>
+            <head>
+                <meta http-equiv="refresh" content="0;url=/main" />
+            </head>
+            <body>
+                <script>window.location.href = "/main";</script>
+            </body>
+        </html>
+    `);
 });
 
-// Proxy setup targeting asim.com
+// Proxy engine setup targeting asim.com
 app.use('/main', createProxyMiddleware({
     target: 'https://xnxx.com',
     changeOrigin: true,
