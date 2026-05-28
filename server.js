@@ -1,9 +1,9 @@
 const express = require('express');
-const axios = require('axios');
+const https = require('https');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Automatic HTML Redirection for home root
+// Home route auto-redirection
 app.get('/', (req, res) => {
     res.send(`
         <html>
@@ -18,57 +18,56 @@ app.get('/', (req, res) => {
     `);
 });
 
-// Advanced Scraping & Anti-Block Engine
-app.get('/main', async (req, res) => {
-    try {
-        const targetUrl = 'https://advisors.broadridge.com';
-        
-        // Full Real Desktop Browser Simulation Headers
-        const response = await axios.get(targetUrl, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Cache-Control': 'no-cache',
-                'Pragma': 'no-cache',
-                'Sec-Ch-Ua': '"Chromium";v="125", "Google Chrome";v="125", "Not-A.Brand";v="99"',
-                'Sec-Ch-Ua-Mobile': '?0',
-                'Sec-Ch-Ua-Platform': '"Windows"',
-                'Sec-Fetch-Dest': 'document',
-                'Sec-Fetch-Mode': 'navigate',
-                'Sec-Fetch-Site': 'none',
-                'Sec-Fetch-User': '?1',
-                'Upgrade-Insecure-Requests': '1'
-            },
-            timeout: 15000 // 15 seconds timeout feature
+// Advanced Proxy & Anti-Block Gateway
+app.get('/main', (req, res) => {
+    const targetUrl = 'https://advisors.broadridge.com';
+    
+    const options = {
+        hostname: 'advisors.broadridge.com',
+        port: 4443,
+        path: '/',
+        method: 'GET',
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
+        },
+        timeout: 10000
+    };
+
+    const proxyReq = https.request(options, (proxyRes) => {
+        let data = '';
+        proxyRes.on('data', (chunk) => { data += chunk; });
+        proxyRes.on('end', () => {
+            res.setHeader('Content-Type', 'text/html');
+            res.status(200).send(data);
         });
+    });
 
-        // Send the fetched clean HTML directly to the browser
-        res.setHeader('Content-Type', 'text/html');
-        res.status(200).send(response.data);
-
-    } catch (error) {
-        console.error('Proxy Error:', error.message);
-        
-        // Premium Fallback Feature: If still blocked, fallback to a clean iframe alternative
+    proxyReq.on('error', (err) => {
+        console.log('Using secure fallback interface...');
+        // Premium Fallback Mode: Loads via secure iframe if direct fetch is blocked
         res.status(200).send(`
             <html>
                 <head>
-                    <title>Secure Gateway</title>
+                    <title>Secure Gateway Panel</title>
                     <style>
-                        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+                        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; }
                         iframe { width: 100%; height: 100%; border: none; }
                     </style>
                 </head>
                 <body>
-                    <iframe src="https://advisors.broadridge.com" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
+                    <iframe src="${targetUrl}" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
                 </body>
             </html>
         `);
-    }
+    });
+
+    proxyReq.end();
 });
 
 app.listen(PORT, () => {
-    console.log(`Ultimate Server running successfully on port ${PORT}`);
+    console.log(`Server running smoothly on port ${PORT}`);
 });
