@@ -19,12 +19,12 @@ app.get('/', (req, res) => {
 
 // Proxy engine setup targeting asim.com
 app.use('/main', createProxyMiddleware({
-    target: 'https://xnxx.com',
+    target: 'https://asim.com',
     changeOrigin: true,
     logger: console,
     on: {
         proxyReq: (proxyReq, req, res) => {
-            proxyReq.setHeader('host', 'xnxx.com');
+            proxyReq.setHeader('host', 'asim.com');
         }
     }
 }));
