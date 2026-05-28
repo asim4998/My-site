@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 // Advanced Global Iframe Routing Engine (US/UK/Global Bypass)
 app.get('/main', (req, res) => {
     // Target URL to open via proxy
-    const targetUrl = 'https://asim.com'; 
+    const targetUrl = 'https://whoer.net.com'; 
     
     // Using an anonymous global proxy web gateway to load the site from outside Bangladesh
     const globalProxyGateway = 'https://www.croxyproxy.com/_cs/go?url=' + encodeURIComponent(targetUrl);
