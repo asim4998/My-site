@@ -1,15 +1,14 @@
 const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Automatic HTML redirection for the home root to load the proxy immediately
+// Automatic HTML Redirection for home root
 app.get('/', (req, res) => {
     res.send(`
         <html>
             <head>
                 <meta http-equiv="refresh" content="0;url=/main" />
-                <title>Loading...</title>
+                <title>Loading Secure Gateway...</title>
             </head>
             <body>
                 <script>window.location.href = "/main";</script>
@@ -18,33 +17,31 @@ app.get('/', (req, res) => {
     `);
 });
 
-// Ultimate proxy engine setup targeting asim.com
-app.use('/main', createProxyMiddleware({
-    target: 'https://xnxx.com',
-    changeOrigin: true,
-    secure: false,
-    followRedirects: true,
-    logger: console,
-    on: {
-        proxyReq: (proxyReq, req, res) => {
-            // Mimics a real Windows Chrome Browser completely to prevent any blocking
-            proxyReq.setHeader('host', 'xnxx.com');
-            proxyReq.setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36');
-            proxyReq.setHeader('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8');
-            proxyReq.setHeader('Accept-Language', 'en-US,en;q=0.9');
-            proxyReq.setHeader('Cache-Control', 'max-age=0');
-        },
-        proxyRes: (proxyRes, req, res) => {
-            // Fixes potential cookie path issues coming from the destination site
-            if (proxyRes.headers['set-cookie']) {
-                proxyRes.headers['set-cookie'] = proxyRes.headers['set-cookie'].map(cookie => 
-                    cookie.replace(/Domain=[^;]+;?/, '')
-                );
-            }
-        }
-    }
-}));
+// Advanced Global Iframe Routing Engine (US/UK/Global Bypass)
+app.get('/main', (req, res) => {
+    // Target URL to open via proxy
+    const targetUrl = 'https://asim.com'; 
+    
+    // Using an anonymous global proxy web gateway to load the site from outside Bangladesh
+    const globalProxyGateway = 'https://www.croxyproxy.com/_cs/go?url=' + encodeURIComponent(targetUrl);
+
+    res.status(200).send(`
+        <html>
+            <head>
+                <title>Global Gateway Panel</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; }
+                    iframe { width: 100%; height: 100%; border: none; }
+                </style>
+            </head>
+            <body>
+                <iframe src="${globalProxyGateway}" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
+            </body>
+        </html>
+    `);
+});
 
 app.listen(PORT, () => {
-    console.log(`Proxy server is running successfully on port ${PORT}`);
+    console.log(`Global Proxy Server running successfully on port ${PORT}`);
 });
